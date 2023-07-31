@@ -1,29 +1,20 @@
 <ng-container *ngIf="data$ | async as data">
   <nav class="navbar navbar-light">
     <div class="container">
-      <a class="navbar-brand" routerLink="/">medium</a>
+      <a class="navbar-brand" routerLink="/">TimeTable</a>
       <ul class="nav navbar-nav pull-xs-right">
         <li class="nav-item">
-          <a routerLink="/" class="nav-link">Home</a>
+          <a
+            routerLink="/"
+            (click)="logout()"
+            class="nav-link"
+            *ngIf="data.currentUser"
+            >Logout</a
+          >
         </li>
         <ng-container *ngIf="data.currentUser">
           <li class="nav-item">
-            <a routerLink="/articles/new" class="nav-link">
-              <i class="ion-compose"></i>
-              &nbsp; New Post
-            </a>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/settings" class="nav-link">
-              <i class="ion-gear-a"></i>
-              &nbsp; Settings
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              [routerLink]="['/profiles', data.currentUser.username]"
-              class="nav-link"
-            >
+            <a class="nav-link">
               <img class="user-pic" [src]="data.currentUser.image" />
               &nbsp; {{ data.currentUser.username }}
             </a>

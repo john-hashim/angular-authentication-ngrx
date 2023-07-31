@@ -1,12 +1,12 @@
-import {Inject, inject} from '@angular/core'
-import {Actions, createEffect, ofType} from '@ngrx/effects'
-import {AuthService} from '../services/auth.service'
-import {authActions} from './actions'
-import {catchError, map, of, switchMap, tap} from 'rxjs'
-import {CurrentUserInterface} from 'src/app/shared/types/currentUser.interface'
-import {HttpErrorResponse} from '@angular/common/http'
-import {PersistenceService} from 'src/app/shared/services/persistence.service'
-import {Router} from '@angular/router'
+import { Inject, inject } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { AuthService } from "../services/auth.service";
+import { authActions } from "./actions";
+import { catchError, map, of, switchMap, tap } from "rxjs";
+import { CurrentUserInterface } from "src/app/shared/types/currentUser.interface";
+import { HttpErrorResponse } from "@angular/common/http";
+import { PersistenceService } from "src/app/shared/services/persistence.service";
+import { Router } from "@angular/router";
 
 export const getCurrentUserEffect = createEffect(
   (
@@ -17,25 +17,25 @@ export const getCurrentUserEffect = createEffect(
     return action$.pipe(
       ofType(authActions.getCurrentUser),
       switchMap(() => {
-        const token = persistenceService.get('accessToken')
-        console.log(token)
+        const token = persistenceService.get("accessToken");
+        console.log(token);
         if (!token) {
-          return of(authActions.getCurrentUserFailure())
+          return of(authActions.getCurrentUserFailure());
         } else {
           return authService.getCurrentUser().pipe(
             map((currentUser: CurrentUserInterface) => {
-              return authActions.getCurrentUserSuccess({currentUser})
+              return authActions.getCurrentUserSuccess({ currentUser });
             }),
             catchError((errors) => {
-              return of(authActions.getCurrentUserFailure())
+              return of(authActions.getCurrentUserFailure());
             })
-          )
+          );
         }
       })
-    )
+    );
   },
-  {functional: true}
-)
+  { functional: true }
+);
 
 export const registerEffects = createEffect(
   (
@@ -45,40 +45,40 @@ export const registerEffects = createEffect(
   ) => {
     return action$.pipe(
       ofType(authActions.register),
-      switchMap(({request}) => {
+      switchMap(({ request }) => {
         return authService.register(request).pipe(
           map((currentUser: CurrentUserInterface) => {
-            persistenceService.set('accessToken', currentUser.token)
-            return authActions.registerSuccess({currentUser})
+            persistenceService.set("accessToken", currentUser.token);
+            return authActions.registerSuccess({ currentUser });
           }),
           catchError((errorResponce: HttpErrorResponse) => {
             return of(
               authActions.registerFailure({
                 errors: errorResponce.error.errors,
               })
-            )
+            );
           })
-        )
+        );
       })
-    )
+    );
   },
-  {functional: true}
-)
+  { functional: true }
+);
 
 export const redirectAfterRegisterEffect = createEffect(
   (action$ = inject(Actions), router = inject(Router)) => {
     return action$.pipe(
       ofType(authActions.registerSuccess),
       tap(() => {
-        router.navigateByUrl('/')
+        router.navigateByUrl("/");
       })
-    )
+    );
   },
   {
     functional: true,
     dispatch: false,
   }
-)
+);
 
 export const loginEffect = createEffect(
   (
@@ -88,37 +88,54 @@ export const loginEffect = createEffect(
   ) => {
     return action$.pipe(
       ofType(authActions.login),
-      switchMap(({request}) => {
+      switchMap(({ request }) => {
         return authService.login(request).pipe(
           map((currentUser: CurrentUserInterface) => {
-            persistenceService.set('accessToken', currentUser.token)
-            return authActions.loginSuccess({currentUser})
+            persistenceService.set("accessToken", currentUser.token);
+            return authActions.loginSuccess({ currentUser });
           }),
           catchError((errorResponce: HttpErrorResponse) => {
             return of(
               authActions.loginFailure({
                 errors: errorResponce.error.errors,
               })
-            )
+            );
           })
-        )
+        );
       })
-    )
+    );
   },
-  {functional: true}
-)
+  { functional: true }
+);
 
 export const RedirectAfteLoginEffect = createEffect(
   (action$ = inject(Actions), router = inject(Router)) => {
     return action$.pipe(
       ofType(authActions.loginSuccess),
       tap(() => {
-        router.navigateByUrl('/')
+        router.navigateByUrl("/feed");
       })
-    )
+    );
   },
   {
     functional: true,
     dispatch: false,
   }
-)
+);
+
+export const logoutEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    router = inject(Router),
+    persistanceService = inject(PersistenceService)
+  ) => {
+    return actions$.pipe(
+      ofType(authActions.logout),
+      tap(() => {
+        persistanceService.set("accessToken", "");
+        router.navigateByUrl("/");
+      })
+    );
+  },
+  { functional: true, dispatch: false }
+);

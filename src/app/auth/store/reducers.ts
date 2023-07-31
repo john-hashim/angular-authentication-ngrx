@@ -1,17 +1,17 @@
-import {createFeature, createReducer, on} from '@ngrx/store'
-import {AuthStateInterface} from '../types/authState.interface'
-import {authActions} from './actions'
-import {routerNavigatedAction} from '@ngrx/router-store'
+import { createFeature, createReducer, on } from "@ngrx/store";
+import { AuthStateInterface } from "../types/authState.interface";
+import { authActions } from "./actions";
+import { routerNavigatedAction } from "@ngrx/router-store";
 
 const initialState: AuthStateInterface = {
   isSubmitting: false,
   isLoading: false,
   currentUser: undefined,
   validationErrors: null,
-}
+};
 
 const authFeature = createFeature({
-  name: 'auth',
+  name: "auth",
   reducer: createReducer(
     initialState,
     on(authActions.register, (state) => ({
@@ -64,9 +64,14 @@ const authFeature = createFeature({
       ...state,
       isLoading: false,
       currentUser: null,
+    })),
+    on(authActions.logout, (state) => ({
+      ...state,
+      ...initialState,
+      currentUser: null,
     }))
   ),
-})
+});
 
 export const {
   name: authFeatureKey,
@@ -75,4 +80,4 @@ export const {
   selectValidationErrors,
   selectIsLoading,
   selectCurrentUser,
-} = authFeature
+} = authFeature;
