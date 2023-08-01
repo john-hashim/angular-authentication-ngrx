@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+table {
+    border-collapse: collapse !important;
+}
+
+th, td {
+    border: 1px solid black !important;
+    padding: 8px !important;
+    text-align: center !important;
+}
