@@ -30,9 +30,14 @@ export class YourFeedComponent {
 
     var timetable = document.getElementById("timetable") as HTMLTableElement;
     timetable.innerHTML = "";
+    
+    var headerRow = timetable.insertRow();
+    var headerCell = headerRow.insertCell();
 
-    // Rest of the code remains the same
-
+    for (var i = 0; i < daysOfWeek.length; i++) {
+      headerCell = headerRow.insertCell();
+      headerCell.innerHTML = daysOfWeek[i];
+    }
     for (var j = 0; j < timeSlots.length; j++) {
       var row = timetable.insertRow();
       var timeCell = row.insertCell();
